@@ -25,3 +25,20 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish net5GitHubAction/net5GitHubAction.csproj -c Release -o './app'
+    - name: Create opensshkey 
+      run : sudo echo '${{ secrets.GCP_VM_SSH }}' > opensshkey
+    - name: Delete Existing Files
+      run : sudo ssh -i opensshkey -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} 'sudo rm -rf /var/www/net5GitHubAction/*'
+    - name: Compress and Copy New Files to server
+      run : |
+            cd ./app
+            tar -czvf ../../app.tar.gz ./
+            cd ..
+            cd ..
+            sudo scp -v -i opensshkey -o StrictHostKeyChecking=no -r app.tar.gz ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}:/var/www/net5GitHubAction/
+    - name: Uncompress new Files
+      run : sudo ssh -i opensshkey -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} 'cd /var/www/net5GitHubAction/ && sudo tar -xzvf app.tar.gz && sudo rm app.tar.gz'
+    - name: change file group
+      run : sudo ssh -i opensshkey -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} 'sudo chgrp -R www-data /var/www/net5GitHubAction'
+      
+
