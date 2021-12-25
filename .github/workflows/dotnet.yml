@@ -24,4 +24,4 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Publish
-      run: dotnet publish net5GitHubAction/net5GitHubAction.csproj -c Release -o '/app'
+      run: dotnet publish net5GitHubAction/net5GitHubAction.csproj -c Release -o './app'
