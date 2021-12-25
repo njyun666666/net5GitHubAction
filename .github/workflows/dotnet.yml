@@ -31,11 +31,8 @@ jobs:
       run : sudo ssh -i opensshkey -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} 'sudo rm -rf /var/www/net5GitHubAction/*'
     - name: Compress and Copy New Files to server
       run : |
-            pwd
-            ls
-            cd ..
-            tar -czvf ../../app.tar.gz ./
-            cd ..
+            cd app
+            tar -czvf ../app.tar.gz ./
             cd ..
             sudo scp -v -i opensshkey -o StrictHostKeyChecking=no -r app.tar.gz ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }}:/var/www/net5GitHubAction/
     - name: Uncompress new Files
